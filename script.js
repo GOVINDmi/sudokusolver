@@ -31,20 +31,33 @@ function FillBoard(board) {
 let GetPuzzle = document.getElementById('GetPuzzle')
 let SolvePuzzle = document.getElementById('SolvePuzzle')
 
-GetPuzzle.onclick = function () {
-	var xhrRequest = new XMLHttpRequest()
-	xhrRequest.onload = function () {
-		var response = JSON.parse(xhrRequest.response)
-		//console.log(response)
-		//console.log(response.board);
-		board = response.board
-		//console.log(board);
-		FillBoard(board)
-	}
-	xhrRequest.open('get', 'https://sugoku.onrender.com/board?difficulty=easy')
-	//we can change the difficulty of the puzzle the allowed values of difficulty are easy, medium, hard and random
-	xhrRequest.send()
-}
+document.getElementById('GetPuzzle').onclick = function () {
+    const difficulty = document.getElementById('difficulty').value;
+  
+    // Function to fetch the puzzle
+    function fetchPuzzle(difficulty) {
+      return fetch(`https://sugoku.onrender.com/board?difficulty=${difficulty}`)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        });
+    }
+    // Call the fetch function and handle the response
+    fetchPuzzle(difficulty)
+      .then(response => {
+        //console.log(response);
+        console.log(response.board);
+        board = response.board;
+        //console.log(board);
+        FillBoard(board);
+      })
+      .catch(error => {
+        console.error('There has been a problem with your fetch operation:', error);
+      });
+  };
+  
 
 
 function check(board ,i,j,num,n)
@@ -117,6 +130,7 @@ function SudokuSolver(board, i, j, n) {
 }
 
 SolvePuzzle.onclick = () => {
+    console.log(board);
 	SudokuSolver(board, 0, 0, 9);
 };
 
