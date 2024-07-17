@@ -147,6 +147,7 @@ function incrementWrongAttempts() {
     wrongAttempts++; // Increment wrong attempts counter
     if (wrongAttempts >= maxWrongAttempts) { // Check if maximum wrong attempts reached
         alert('Game Over! Too many wrong attempts.'); // Show game over alert message
+        document.querySelectorAll('.box').forEach(cell => cell.style.backgroundColor = '');
         document.querySelectorAll('.box').forEach(cell => cell.disabled = true); // Disable all input cells
     }
 }
