@@ -1,121 +1,99 @@
-.Header{
-    display: flex;
-    justify-content: right;
-    width: 100%;
-    margin-bottom: 60px;
-    background-color: blanchedalmond;
-} 
+/*
+box-sizing is a CSS property that determines how the browser calculates the total width and height of an element. It affects the sizing of the element's content box.
+
+content-box (default):
+
+This is the default behavior where the width and height properties only apply to the element's content box, excluding padding and borders.
+When you add padding or borders, they increase the total size of the element beyond the specified width and height.
+
+border-box:
+
+In border-box mode, the width and height properties include padding and borders.
+This means that the specified width and height values determine the size of the entire box, including padding and borders. The content box shrinks as padding and borders are added.
+*/
 
 
 
-#name{
-    width: 60%;
-    display: flex;
-    align-items: center;
-    font-size: 50px;
-    font-weight: bold;
+
+
+
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
-
-.Heading{
-    width: 100%;
+body, html {
+    height: 100%;
+    margin: 0;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    font-size: 40px;
-    font-weight: bolder;
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5; /* Default background color */
 }
 
-.sudoku_grid{
+.Header {
     display: flex;
-    flex-direction: row;
-    max-width: 578px;
-    flex-wrap: wrap;
-
-    margin: 10px auto ;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    background-color: #3498db; /* Background color for the header */
+    padding: 10px; /* Padding around the header content */
+    width: 100%; /* Full width */
+    box-sizing: border-box; /* Include padding and border in width calculation */
 }
-#diff {
+
+#name {
+    color: white; /* Text color */
+    font-size: 24px; /* Font size */
+}
+
+.center-container {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-top: 40px;
-    margin-bottom: 40px;
-    
-  }
-  #difficulty {
-    padding: 10px 35px;
-  }
-.sudoku_grid div{
-    display:  flex;
-    align-items: center;
-    justify-content: center;
-    
-    width: 60px;
-    height: 60px;
-    color: white;
-    font-size: 40px;
-
-    box-sizing: border-box;
+    margin-bottom: 20px;
+    background-color: #ffffff; /* Background color for the Sudoku solver area */
+    padding: 20px; /* Padding inside the container */
+    border: 2px solid #3498db; /* Border around the container */
+    width: 80%; /* Adjust width as needed */
+    max-width: 600px; /* Maximum width */
+    box-sizing: border-box; /* Include padding and border in width calculation */
 }
 
-.Buttons{   
-    display: flex;
-    justify-content: center;
-    width: 100%;    
-    margin-bottom: 80px;
+
+
+.sudoku_grid {
+    display: grid;
+    grid-template-columns: repeat(9, 40px);
+    gap: 1px;
+    border: 1px solid black; /* Border around each cell in the grid */
+    background-color: #ffffff; /* Background color behind the grid */
+    margin-bottom: 20px;
 }
 
-#GetPuzzle,#SolvePuzzle{
-    display: inline-block;
-    text-decoration: none;
-    color: #fff;
-    font-weight: bold;
-    background-color: #538fbe;
-    padding: 10px 35px;
-    font-size: 24px;
-    border: 1px solid #2d6898;
-    box-shadow: inset 0px 1px 0px rgba(255,255,255,.3);
-    margin-right: 10px;
+.box {
+    width: 40px;
+    height: 40px;
+    text-align: center;
+    font-size: 20px;
+    border: 1px solid black; /* Black border for each cell */
+    background-color: white;
 }
 
-.box1{
-    background-color: #1520A6;
-    border: 2px solid  white;
+.box.prefilled {
+    background-color: darkgrey; /* Dark grey background for pre-filled cells */
 }
 
-.box1:hover{
-    background-color: #48aaaD;
-    color: black;
+.Buttons {
+    text-align: center;
+    margin-top: 10px;
 }
 
-.box2{
-    background-color: #BC5448;
-    border: 2px solid  white;
-}
-.box2:hover{
-    background-color: red;
-}
-
-.box3{
-    background-color: #028a0f;
-    border: 2px solid  white;
-}
-.box3:hover{
-    background-color: #3Ded97;
-    color: black
-}
-
-.bl{
-    border-left: 4px solid black;
-}
-
-.bb{
-    border-bottom: 4px solid black;
-}
-
-.br{
-    border-right: 4px solid black;
-}
-
-.bt{
-    border-top: 4px solid black;
+.Buttons button {
+    margin: 5px;
+    padding: 10px;
+    font-size: 16px;
 }
