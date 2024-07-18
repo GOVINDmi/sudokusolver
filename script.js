@@ -8,14 +8,15 @@ function createSudokuGrid() {
             input.id = `${i * 9 + j}`; // Assign a unique ID based on row and column indices
             input.className = 'box'; // Add a class name to style the input
             input.maxLength = 1; // Set the maximum length of input to 1 character (single digit)
+
+            // Event listener to highlight the row, column, and 3x3 grid
+            //here whenever we click on the cell then it focus on the row and clumn and 3x3 grid as when we click away from the cell where we click then it looses it focus then blur is called as it is when cell looses the focus
+            input.addEventListener('focus', () => highlightCells(i, j));
+            input.addEventListener('blur', clearHighlights);
+
             // Input validation
             input.oninput = (e) => {
                 const value = e.target.value;
-            // /^[1-9]$/: This is a regular expression literal enclosed in forward slashes (/). It specifies the pattern to match:
-
-            // ^: Asserts the start of the string.
-            // [1-9]: Matches any single digit between 1 and 9.
-            // $: Asserts the end of the string.
                 if (!/^[1-9]$/.test(value)) { // Validate if the input is a number between 1 and 9
                     e.target.value = ''; // Clear the input if it's not a valid number
                     e.target.style.backgroundColor = ''; // Reset background color if input is cleared
@@ -24,6 +25,39 @@ function createSudokuGrid() {
                 }
             };
             sudokuGrid.appendChild(input); // Append the input element to the Sudoku grid container
+        }
+    }
+}
+
+// Function to highlight the relevant cells
+function highlightCells(row, col) {
+    // Highlight the entire row
+    for (let j = 0; j < 9; j++) {
+        arr[row][j].style.backgroundColor = 'lightblue';
+    }
+
+    // Highlight the entire column
+    for (let i = 0; i < 9; i++) {
+        arr[i][col].style.backgroundColor = 'lightblue';
+    }
+
+    // Highlight the 3x3 sub-grid
+    const startRow = row - (row % 3);
+    const startCol = col - (col % 3);
+    for (let i = startRow; i < startRow + 3; i++) {
+        for (let j = startCol; j < startCol + 3; j++) {
+            arr[i][j].style.backgroundColor = 'lightblue';
+        }
+    }
+}
+
+// Function to clear the highlights
+function clearHighlights() {
+    for (let i = 0; i < 9; i++) {
+        for (let j = 0; j < 9; j++) {
+            if (arr[i][j].style.backgroundColor == 'lightblue') {
+                arr[i][j].style.backgroundColor = ''; // Clear the background color
+            }
         }
     }
 }
@@ -50,7 +84,6 @@ function FillBoard(board) {
         for (var j = 0; j < 9; j++) { // Loop through each column
             if (board[i][j] != 0) { // Check if the cell is not empty (has a number)
                 arr[i][j].value = board[i][j]; // Set the input value to the number from the board
-                //The cell.disabled property in JavaScript is used to enable or disable a form element, such as an <input> element. When an element is disabled, it cannot be interacted with by the user, and it typically appears grayed out in the browser.
                 arr[i][j].disabled = true; // Disable the input to prevent user modification
                 arr[i][j].classList.add('prefilled'); // Add prefilled class for styling
             } else {
@@ -95,8 +128,6 @@ const maxWrongAttempts = 3; // Maximum allowed wrong attempts before game over
 
 // Function to validate user input against Sudoku rules
 function validateInput(value, row, col) {
-    //In JavaScript, when you receive input from a form or user interaction, it typically comes in as a string. For numerical operations or comparisons, you often need this value as a number (integer or float).
-
     const num = parseInt(value); // Convert the input value to an integer
     let isValid = true;
 
@@ -135,7 +166,8 @@ function validateInput(value, row, col) {
     // Update cell background color based on validity
     if (isValid) {
         arr[row][col].style.backgroundColor = ''; // Reset background color if valid
-       // wrongAttempts = 0; // Reset wrong attempts counter if input is valid
+        arr[row][col].disabled = true;
+        arr[row][col].classList.add('prefilled');
     } else {
         arr[row][col].style.backgroundColor = 'red'; // Set background color to red if invalid
         incrementWrongAttempts(); // Increment wrong attempts counter

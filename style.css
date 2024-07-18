@@ -11,13 +11,6 @@ border-box:
 In border-box mode, the width and height properties include padding and borders.
 This means that the specified width and height values determine the size of the entire box, including padding and borders. The content box shrinks as padding and borders are added.
 */
-
-
-
-
-
-
-
 * {
     margin: 0;
     padding: 0;
@@ -31,6 +24,7 @@ body, html {
     justify-content: center;
     align-items: center;
     font-family: Arial, sans-serif;
+   
     background-color: #f5f5f5; /* Default background color */
 }
 
