@@ -10,7 +10,6 @@ function createSudokuGrid() {
             input.maxLength = 1; // Set the maximum length of input to 1 character (single digit)
 
             // Event listener to highlight the row, column, and 3x3 grid
-            //here whenever we click on the cell then it focus on the row and clumn and 3x3 grid as when we click away from the cell where we click then it looses it focus then blur is called as it is when cell looses the focus
             input.addEventListener('focus', () => highlightCells(i, j));
             input.addEventListener('blur', clearHighlights);
 
@@ -98,6 +97,7 @@ function FillBoard(board) {
 // Event handler for the 'Get Puzzle' button click
 document.getElementById('GetPuzzle').onclick = function () {
     wrongAttempts = 0;
+    stopTimer();
     const difficulty = document.getElementById('difficulty').value; // Get the selected difficulty level from dropdown
 
     // Function to fetch a Sudoku puzzle from an API based on difficulty
@@ -116,6 +116,7 @@ document.getElementById('GetPuzzle').onclick = function () {
         .then(response => {
             board = response.board; // Assign the fetched Sudoku board to the global 'board' variable
             FillBoard(board); // Fill the Sudoku grid with numbers from the fetched board
+            startTimer(); // Start the timer when the puzzle is fetched
         })
         .catch(error => {
             console.error('There has been a problem with your fetch operation:', error); // Log an error message if fetching fails
@@ -125,6 +126,69 @@ document.getElementById('GetPuzzle').onclick = function () {
 // Counter for wrong attempts made by the user
 let wrongAttempts = 0;
 const maxWrongAttempts = 3; // Maximum allowed wrong attempts before game over
+
+// Timer variables
+let timerInterval;
+let startTime;
+let elapsedPausedTime = 0;
+let pausedTime = 0;
+let isPaused = false;
+
+// Function to start the timer
+function startTimer() {
+    startTime = new Date();
+    timerInterval = setInterval(updateTimer, 1000); // Update the timer every second
+}
+
+// Function to update the timer display
+function updateTimer() {
+    if(!isPaused)
+    {
+        let currentTime = new Date();
+        console.log(currentTime.getTime());
+        let elapsedTime = currentTime.getTime() - startTime.getTime() - elapsedPausedTime ;//here instead of deleting getTime we can directly delete the current and time as it internallh it convert in milliseconds and provide ans in milli second
+
+        let hours = Math.floor(elapsedTime / (1000 * 60 * 60)).toString().padStart(2, '0');
+        let minutes = (Math.floor(elapsedTime / (1000 * 60)) % 60).toString().padStart(2, '0');
+        let seconds = (Math.floor(elapsedTime / 1000) % 60).toString().padStart(2, '0');
+        document.getElementById('timer').innerText = `${hours}:${minutes}:${seconds}`;
+
+    }
+    
+}
+
+// Function to stop the timer
+function stopTimer() {
+    clearInterval(timerInterval);
+    //document.getElementById('timer').innerText = `${"00"}:${"00"}:${"00"}`;
+     timerInterval = 0;
+     startTime = 0;
+     elapsedPausedTime = 0;
+     pausedTime = 0;
+     isPaused = false;
+
+}
+
+// Function to pause the timer
+function pauseTimer() {
+    if (!isPaused) {
+        pausedTime = new Date();
+        isPaused = true;
+    }
+}
+
+// Function to resume the timer
+function resumeTimer() {
+    if (isPaused) {
+        const currentTime = new Date();
+        elapsedPausedTime += currentTime.getTime() - pausedTime.getTime();
+        isPaused = false;
+    }
+}
+
+// Event handlers for pause and resume buttons
+document.getElementById('PauseTimer').onclick = pauseTimer;
+document.getElementById('ResumeTimer').onclick = resumeTimer;
 
 // Function to validate user input against Sudoku rules
 function validateInput(value, row, col) {
@@ -181,6 +245,7 @@ function incrementWrongAttempts() {
         alert('Game Over! Too many wrong attempts.'); // Show game over alert message
         document.querySelectorAll('.box').forEach(cell => cell.style.backgroundColor = '');
         document.querySelectorAll('.box').forEach(cell => cell.disabled = true); // Disable all input cells
+        stopTimer(); // Stop the timer when the game is over
     }
 }
 
@@ -214,6 +279,7 @@ function check(board, i, j, num, n) {
 function SudokuSolver(board, i, j, n) {
     if (i == n) { // If all rows are processed (base case)
         FillBoard(board); // Fill the Sudoku grid with the solved board
+        stopTimer(); // Stop the timer when the puzzle is solved
         return true; // Return true to indicate a solution is found
     }
 
@@ -245,4 +311,5 @@ function SudokuSolver(board, i, j, n) {
 document.getElementById('SolvePuzzle').onclick = () => {
     console.log(board);
     SudokuSolver(board, 0, 0, 9);
+    stopTimer();
 };

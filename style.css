@@ -38,7 +38,35 @@ body, html {
     width: 100%; /* Full width */
     box-sizing: border-box; /* Include padding and border in width calculation */
 }
-
+#timer {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+#pauseResumeButtons {
+    display: flex;
+    gap: 10px;
+}
+#pauseResumeButtons button {
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+#pauseResumeButtons button:hover {
+    background-color: #00796b;
+    color: white;
+}
+#PauseTimer {
+    background-color: #f44336;
+    color: white;
+}
+#ResumeTimer {
+    background-color: #4caf50;
+    color: white;
+}
 #name {
     color: white; /* Text color */
     font-size: 24px; /* Font size */
