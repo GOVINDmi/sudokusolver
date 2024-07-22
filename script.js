@@ -20,7 +20,7 @@ function createSudokuGrid() {
                     e.target.value = ''; // Clear the input if it's not a valid number
                     e.target.style.backgroundColor = ''; // Reset background color if input is cleared
                 } else {
-                    validateInput(value, i, j); // Validate the input against Sudoku rules
+                    validateInput(value, i, j); // Validate the input against the solved Sudoku board
                 }
             };
             sudokuGrid.appendChild(input); // Append the input element to the Sudoku grid container
@@ -76,6 +76,8 @@ for (var i = 0; i < 9; i++) {
 
 // 2D array to represent the Sudoku board
 var board = [[], [], [], [], [], [], [], [], []];
+// 2D array to represent the solved Sudoku board
+var solvedBoard = [[], [], [], [], [], [], [], [], []];
 
 // Function to fill the Sudoku grid with numbers from the board array
 function FillBoard(board) {
@@ -115,6 +117,12 @@ document.getElementById('GetPuzzle').onclick = function () {
     fetchPuzzle(difficulty)
         .then(response => {
             board = response.board; // Assign the fetched Sudoku board to the global 'board' variable
+
+            // Clone the fetched board and solve it
+            const boardCopy = board.map(row => row.slice());
+            SudokuSolver(boardCopy, 0, 0, 9);
+            solvedBoard = boardCopy;
+
             FillBoard(board); // Fill the Sudoku grid with numbers from the fetched board
             startTimer(); // Start the timer when the puzzle is fetched
         })
@@ -142,31 +150,24 @@ function startTimer() {
 
 // Function to update the timer display
 function updateTimer() {
-    if(!isPaused)
-    {
+    if (!isPaused) {
         let currentTime = new Date();
-        console.log(currentTime.getTime());
-        let elapsedTime = currentTime.getTime() - startTime.getTime() - elapsedPausedTime ;//here instead of deleting getTime we can directly delete the current and time as it internallh it convert in milliseconds and provide ans in milli second
-
+        let elapsedTime = currentTime.getTime() - startTime.getTime() - elapsedPausedTime;
         let hours = Math.floor(elapsedTime / (1000 * 60 * 60)).toString().padStart(2, '0');
         let minutes = (Math.floor(elapsedTime / (1000 * 60)) % 60).toString().padStart(2, '0');
         let seconds = (Math.floor(elapsedTime / 1000) % 60).toString().padStart(2, '0');
         document.getElementById('timer').innerText = `${hours}:${minutes}:${seconds}`;
-
     }
-    
 }
 
 // Function to stop the timer
 function stopTimer() {
     clearInterval(timerInterval);
-    //document.getElementById('timer').innerText = `${"00"}:${"00"}:${"00"}`;
-     timerInterval = 0;
-     startTime = 0;
-     elapsedPausedTime = 0;
-     pausedTime = 0;
-     isPaused = false;
-
+    timerInterval = 0;
+    startTime = 0;
+    elapsedPausedTime = 0;
+    pausedTime = 0;
+    isPaused = false;
 }
 
 // Function to pause the timer
@@ -190,42 +191,10 @@ function resumeTimer() {
 document.getElementById('PauseTimer').onclick = pauseTimer;
 document.getElementById('ResumeTimer').onclick = resumeTimer;
 
-// Function to validate user input against Sudoku rules
+// Function to validate user input against the solved Sudoku board
 function validateInput(value, row, col) {
     const num = parseInt(value); // Convert the input value to an integer
-    let isValid = true;
-
-    // Check if the number already exists in the same row
-    for (let j = 0; j < 9; j++) {
-        if (j !== col && arr[row][j].value == num) { // Exclude the current cell and check for duplicates
-            isValid = false;
-            break;
-        }
-    }
-
-    // Check if the number already exists in the same column
-    if (isValid) {
-        for (let i = 0; i < 9; i++) {
-            if (i !== row && arr[i][col].value == num) { // Exclude the current cell and check for duplicates
-                isValid = false;
-                break;
-            }
-        }
-    }
-
-    // Check if the number already exists in the 3x3 sub-grid
-    if (isValid) {
-        const startRow = row - (row % 3); // Calculate the start row index of the sub-grid
-        const startCol = col - (col % 3); // Calculate the start column index of the sub-grid
-        for (let i = startRow; i < startRow + 3; i++) {
-            for (let j = startCol; j < startCol + 3; j++) {
-                if ((i !== row || j !== col) && arr[i][j].value == num) { // Exclude the current cell and check for duplicates
-                    isValid = false;
-                    break;
-                }
-            }
-        }
-    }
+    let isValid = (solvedBoard[row][col] === num); // Check if the input matches the solved board
 
     // Update cell background color based on validity
     if (isValid) {
@@ -238,15 +207,45 @@ function validateInput(value, row, col) {
     }
 }
 
-// Function to increment wrong attempts counter and handle game over
+// Function to increment and check wrong attempts
 function incrementWrongAttempts() {
-    wrongAttempts++; // Increment wrong attempts counter
+    wrongAttempts++;
     if (wrongAttempts >= maxWrongAttempts) { // Check if maximum wrong attempts reached
         alert('Game Over! Too many wrong attempts.'); // Show game over alert message
         document.querySelectorAll('.box').forEach(cell => cell.style.backgroundColor = '');
         document.querySelectorAll('.box').forEach(cell => cell.disabled = true); // Disable all input cells
         stopTimer(); // Stop the timer when the game is over
     }
+}
+
+// Function to solve the Sudoku board using backtracking
+function SudokuSolver(board, i, j, n) {
+    if (i == n) { // If all rows are processed (base case)
+        return true; // Return true to indicate a solution is found
+    }
+
+    if (j == n) { // If all columns in the current row are processed
+        return SudokuSolver(board, i + 1, 0, n); // Move to the next row
+    }
+
+    if (board[i][j] != 0) { // If the current cell is not empty
+        return SudokuSolver(board, i, j + 1, n); // Move to the next column
+    }
+
+    // Try placing numbers 1 to 9 in the current cell
+    for (let num = 1; num <= 9; num++) {
+        if (check(board, i, j, num, n)) { // Check if 'num' can be placed at board[i][j]
+            board[i][j] = num; // Place 'num' at board[i][j]
+
+            if (SudokuSolver(board, i, j + 1, n)) { // Recursively solve the next column
+                return true; // Return true if a solution is found
+            }
+
+            board[i][j] = 0; // Backtrack: Reset board[i][j] to 0 if no valid number found
+        }
+    }
+
+    return false; // Return false if no number can be placed at board[i][j] (trigger backtracking)
 }
 
 // Function to check if placing 'num' at board[i][j] is valid
@@ -275,41 +274,10 @@ function check(board, i, j, num, n) {
     return true; // Return true if placing 'num' at board[i][j] is valid
 }
 
-// Function to solve the Sudoku board using backtracking
-function SudokuSolver(board, i, j, n) {
-    if (i == n) { // If all rows are processed (base case)
-        FillBoard(board); // Fill the Sudoku grid with the solved board
-        stopTimer(); // Stop the timer when the puzzle is solved
-        return true; // Return true to indicate a solution is found
-    }
-
-    if (j == n) { // If all columns in the current row are processed
-        return SudokuSolver(board, i + 1, 0, n); // Move to the next row
-    }
-
-    if (board[i][j] != 0) { // If the current cell is not empty
-        return SudokuSolver(board, i, j + 1, n); // Move to the next column
-    }
-
-    // Try placing numbers 1 to 9 in the current cell
-    for (let num = 1; num <= 9; num++) {
-        if (check(board, i, j, num, n)) { // Check if 'num' can be placed at board[i][j]
-            board[i][j] = num; // Place 'num' at board[i][j]
-
-            if (SudokuSolver(board, i, j + 1, n)) { // Recursively solve the next column
-                return true; // Return true if a solution is found
-            }
-
-            board[i][j] = 0; // Backtrack: Reset board[i][j] to 0 if no valid number found
-        }
-    }
-
-    return false; // Return false if no number can be placed at board[i][j] (trigger backtracking)
-}
-
 // Event handler for the 'Solve Puzzle' button click
 document.getElementById('SolvePuzzle').onclick = () => {
-    console.log(board);
-    SudokuSolver(board, 0, 0, 9);
+    const boardCopy = board.map(row => row.slice());
+    SudokuSolver(boardCopy, 0, 0, 9);
+    FillBoard(boardCopy);
     stopTimer();
 };
