@@ -276,6 +276,13 @@ function check(board, i, j, num, n) {
 
 // Event handler for the 'Solve Puzzle' button click
 document.getElementById('SolvePuzzle').onclick = () => {
+    for(let i = 0;i<9;i++)
+    {
+        for(let j = 0;j<9;j++)
+        {
+            arr[i][j].style.backgroundColor = '';
+        }
+    }
     const boardCopy = board.map(row => row.slice());
     SudokuSolver(boardCopy, 0, 0, 9);
     FillBoard(boardCopy);
