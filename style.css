@@ -1,21 +1,9 @@
-/*
-box-sizing is a CSS property that determines how the browser calculates the total width and height of an element. It affects the sizing of the element's content box.
-
-content-box (default):
-
-This is the default behavior where the width and height properties only apply to the element's content box, excluding padding and borders.
-When you add padding or borders, they increase the total size of the element beyond the specified width and height.
-
-border-box:
-
-In border-box mode, the width and height properties include padding and borders.
-This means that the specified width and height values determine the size of the entire box, including padding and borders. The content box shrinks as padding and borders are added.
-*/
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
+
 body, html {
     height: 100%;
     margin: 0;
@@ -24,29 +12,38 @@ body, html {
     justify-content: center;
     align-items: center;
     font-family: Arial, sans-serif;
-   
-    background-color: #f5f5f5; /* Default background color */
+    background-color: #f0f4f8; /* Light background color */
 }
 
-.Header {
+.header {
     display: flex;
     align-items: center;
     justify-content: center;
+    margin-top: 60px;
     margin-bottom: 20px;
-    background-color: #3498db; /* Background color for the header */
-    padding: 10px; /* Padding around the header content */
-    width: 100%; /* Full width */
-    box-sizing: border-box; /* Include padding and border in width calculation */
+    background-color: #2c3e50; /* Dark blue background */
+    padding: 15px;
+    width: 50%;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
+
+#name {
+    color: white;
+    font-size: 24px;
+}
+
 #timer {
     font-size: 24px;
     font-weight: bold;
     margin-bottom: 10px;
+    color: #2c3e50; /* Dark blue text */
 }
+
 #pauseResumeButtons {
     display: flex;
     gap: 10px;
 }
+
 #pauseResumeButtons button {
     padding: 10px 20px;
     font-size: 16px;
@@ -54,22 +51,19 @@ body, html {
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s;
+    color: white;
 }
+
 #pauseResumeButtons button:hover {
-    background-color: #00796b;
-    color: white;
+    opacity: 0.8;
 }
+
 #PauseTimer {
-    background-color: #f44336;
-    color: white;
+    background-color: #e74c3c; /* Red background */
 }
+
 #ResumeTimer {
-    background-color: #4caf50;
-    color: white;
-}
-#name {
-    color: white; /* Text color */
-    font-size: 24px; /* Font size */
+    background-color: #27ae60; /* Green background */
 }
 
 .center-container {
@@ -77,23 +71,55 @@ body, html {
     flex-direction: column;
     align-items: center;
     margin-bottom: 20px;
-    background-color: #ffffff; /* Background color for the Sudoku solver area */
-    padding: 20px; /* Padding inside the container */
-    border: 2px solid #3498db; /* Border around the container */
-    width: 80%; /* Adjust width as needed */
-    max-width: 600px; /* Maximum width */
-    box-sizing: border-box; /* Include padding and border in width calculation */
+    background-color: white;
+    padding: 20px;
+    border: 1px solid #bdc3c7; /* Light grey border */
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
+#diff {
+    margin-bottom: 20px;
+}
 
+#difficulty {
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #bdc3c7;
+    border-radius: 5px;
+}
+
+.buttons button {
+    margin: 5px;
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    color: white;
+}
+
+.buttons button:hover {
+    opacity: 0.8;
+}
+
+#GetPuzzle {
+    background-color: #3498db; /* Blue background */
+}
+
+#SolvePuzzle {
+    background-color: #e67e22; /* Orange background */
+}
 
 .sudoku_grid {
     display: grid;
     grid-template-columns: repeat(9, 40px);
-    gap: 1px;
-    border: 1px solid black; /* Border around each cell in the grid */
-    background-color: #ffffff; /* Background color behind the grid */
-    margin-bottom: 20px;
+    gap: 2px;
+    border: 2px solid #2c3e50;
+    background-color: #ecf0f1; /* Light grey background */
+    padding: 10px;
+    border-radius: 10px;
 }
 
 .box {
@@ -101,21 +127,49 @@ body, html {
     height: 40px;
     text-align: center;
     font-size: 20px;
-    border: 1px solid black; /* Black border for each cell */
+    border: 1px solid #bdc3c7;
+    border-radius: 5px;
     background-color: white;
+    transition: background-color 0.3s;
 }
 
 .box.prefilled {
-    background-color: darkgrey; /* Dark grey background for pre-filled cells */
+    background-color: #bdc3c7; /* Grey background for pre-filled cells */
 }
 
-.Buttons {
-    text-align: center;
-    margin-top: 10px;
-}
-
-.Buttons button {
-    margin: 5px;
+.number-counts {
+    display: flex;
+   
+    gap: 10px;
+    margin-top: 20px;
+    background-color: white;
     padding: 10px;
-    font-size: 16px;
+    border: 1px solid #bdc3c7;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 100%;
+}
+
+.numberBox {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    background-color: #ecf0f1;
+    border: 1px solid #bdc3c7;
+    border-radius: 5px;
+    font-size: 18px;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+.numberBox:hover {
+    background-color: #bdc3c7;
+}
+
+.numberBox .number {
+    color: #2c3e50;
+}
+
+.numberBox .count {
+    color: #e74c3c;
 }

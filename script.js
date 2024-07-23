@@ -14,14 +14,21 @@ function createSudokuGrid() {
             input.addEventListener('blur', clearHighlights);
 
             // Input validation
+            // Modify the input event to update counts when a number is removed
             input.oninput = (e) => {
                 const value = e.target.value;
                 if (!/^[1-9]$/.test(value)) { // Validate if the input is a number between 1 and 9
+                    if (e.target.oldValue) {
+                        // Increment the count for the removed number
+                        numberCounts[parseInt(e.target.oldValue)]++;
+                        updateCountDisplay();
+                    }
                     e.target.value = ''; // Clear the input if it's not a valid number
-                    e.target.style.backgroundColor = ''; // Reset background color if input is cleared
+                    e.target.style.backgroundColor = "lightblue"; // Reset background color if input is cleared
                 } else {
                     validateInput(value, i, j); // Validate the input against the solved Sudoku board
                 }
+                e.target.oldValue = value; // Store the old value for comparison
             };
             sudokuGrid.appendChild(input); // Append the input element to the Sudoku grid container
         }
@@ -78,6 +85,7 @@ for (var i = 0; i < 9; i++) {
 var board = [[], [], [], [], [], [], [], [], []];
 // 2D array to represent the solved Sudoku board
 var solvedBoard = [[], [], [], [], [], [], [], [], []];
+let numberCounts = new Array(10).fill(9); // Initialize counts for numbers 1-9
 
 // Function to fill the Sudoku grid with numbers from the board array
 function FillBoard(board) {
@@ -122,15 +130,26 @@ document.getElementById('GetPuzzle').onclick = function () {
             const boardCopy = board.map(row => row.slice());
             SudokuSolver(boardCopy, 0, 0, 9);
             solvedBoard = boardCopy;
+            console.log(solvedBoard);
 
             FillBoard(board); // Fill the Sudoku grid with numbers from the fetched board
             startTimer(); // Start the timer when the puzzle is fetched
+
+            // Initialize the number counts
+            numberCounts.fill(9);
+            for (let i = 0; i < 9; i++) {
+                for (let j = 0; j < 9; j++) {
+                    if (board[i][j] !== 0) {
+                        numberCounts[board[i][j]]--;
+                    }
+                }
+            }
+            updateNumberCounts();
         })
         .catch(error => {
             console.error('There has been a problem with your fetch operation:', error); // Log an error message if fetching fails
         });
 };
-
 // Counter for wrong attempts made by the user
 let wrongAttempts = 0;
 const maxWrongAttempts = 3; // Maximum allowed wrong attempts before game over
@@ -190,8 +209,38 @@ function resumeTimer() {
 // Event handlers for pause and resume buttons
 document.getElementById('PauseTimer').onclick = pauseTimer;
 document.getElementById('ResumeTimer').onclick = resumeTimer;
+// Function to update the count display
+function updateCountDisplay(number, count) {
+    const countElement = document.getElementById(`count-${number}`).querySelector('.count');
+    countElement.textContent = 9 - count;
+}
 
-// Function to validate user input against the solved Sudoku board
+// Function to update the number counts
+function updateNumberCounts() {
+    const counts = Array(9).fill(0); // Initialize an array to hold counts for each number 1-9
+
+    for (let i = 0; i < 81; i++) { // Loop through all cells in the Sudoku grid
+        const value = document.getElementById(i).value; // Get the value of the cell
+        if (value >= '1' && value <= '9') { // Check if the value is a valid number between 1 and 9
+            counts[parseInt(value) - 1]++; // Increment the count for the corresponding number
+        }
+    }
+
+    for (let i = 0; i < 9; i++) { // Loop through each number 1-9
+        updateCountDisplay(i + 1, counts[i]); // Update the count display for each number
+    }
+}
+function isSudokuSolved() {
+    for (let i = 0; i < 9; i++) {
+        for (let j = 0; j < 9; j++) {
+            if (arr[i][j].value == "" || parseInt(arr[i][j].value) !== solvedBoard[i][j]) {
+                return false; // Return false if any cell is empty or incorrect
+            }
+        }
+    }
+    return true; // Return true if all cells are correctly filled
+}
+// Modify validateInput to update the counts
 function validateInput(value, row, col) {
     const num = parseInt(value); // Convert the input value to an integer
     let isValid = (solvedBoard[row][col] === num); // Check if the input matches the solved board
@@ -201,12 +250,21 @@ function validateInput(value, row, col) {
         arr[row][col].style.backgroundColor = ''; // Reset background color if valid
         arr[row][col].disabled = true;
         arr[row][col].classList.add('prefilled');
+
+        // Decrement the count for the used number
+        
+        updateNumberCounts();
+
+        // Check if the Sudoku is solved
+        if (isSudokuSolved()) {
+            alert('Congratulations! You have solved the Sudoku.');
+            stopTimer(); // Stop the timer when the puzzle is solved
+        }
     } else {
         arr[row][col].style.backgroundColor = 'red'; // Set background color to red if invalid
         incrementWrongAttempts(); // Increment wrong attempts counter
     }
 }
-
 // Function to increment and check wrong attempts
 function incrementWrongAttempts() {
     wrongAttempts++;
@@ -276,10 +334,8 @@ function check(board, i, j, num, n) {
 
 // Event handler for the 'Solve Puzzle' button click
 document.getElementById('SolvePuzzle').onclick = () => {
-    for(let i = 0;i<9;i++)
-    {
-        for(let j = 0;j<9;j++)
-        {
+    for(let i = 0;i<9;i++) {
+        for(let j = 0;j<9;j++) {
             arr[i][j].style.backgroundColor = '';
         }
     }
@@ -287,4 +343,6 @@ document.getElementById('SolvePuzzle').onclick = () => {
     SudokuSolver(boardCopy, 0, 0, 9);
     FillBoard(boardCopy);
     stopTimer();
+    alert('Sudoku solved by the solver.');
+   updateNumberCounts();
 };
