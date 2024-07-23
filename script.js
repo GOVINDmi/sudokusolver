@@ -14,26 +14,21 @@ function createSudokuGrid() {
             input.addEventListener('blur', clearHighlights);
 
             // Input validation
-            // Modify the input event to update counts when a number is removed
             input.oninput = (e) => {
                 const value = e.target.value;
                 if (!/^[1-9]$/.test(value)) { // Validate if the input is a number between 1 and 9
-                    if (e.target.oldValue) {
-                        // Increment the count for the removed number
-                        numberCounts[parseInt(e.target.oldValue)]++;
-                        updateCountDisplay();
-                    }
                     e.target.value = ''; // Clear the input if it's not a valid number
-                    e.target.style.backgroundColor = "lightblue"; // Reset background color if input is cleared
+                    e.target.style.backgroundColor = 'lightblue'; // Reset background color if input is cleared
                 } else {
                     validateInput(value, i, j); // Validate the input against the solved Sudoku board
                 }
-                e.target.oldValue = value; // Store the old value for comparison
             };
             sudokuGrid.appendChild(input); // Append the input element to the Sudoku grid container
         }
     }
 }
+    
+
 
 // Function to highlight the relevant cells
 function highlightCells(row, col) {
@@ -268,6 +263,7 @@ function validateInput(value, row, col) {
 // Function to increment and check wrong attempts
 function incrementWrongAttempts() {
     wrongAttempts++;
+
     if (wrongAttempts >= maxWrongAttempts) { // Check if maximum wrong attempts reached
         alert('Game Over! Too many wrong attempts.'); // Show game over alert message
         document.querySelectorAll('.box').forEach(cell => cell.style.backgroundColor = '');
